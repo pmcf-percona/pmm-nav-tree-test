@@ -44,7 +44,7 @@ When you're done, share the sheet (or paste the CSV) into this chat and I'll com
 
 ## How the tree is shaped
 - **Search** is not a node. Tree tests measure browsing; search would let people bypass the structure being tested.
-- **My navigation** simulates a participant who has already pinned two pages: MongoDB backups and PostgreSQL query analytics. Those are accepted answers for tasks 1 and 2, so expect those two tasks to score higher than the rest and compare them with care.
+- **My navigation** simulates a participant who has already pinned three pages: MongoDB backups, MySQL InnoDB details and PostgreSQL query analytics. The first and last are accepted answers for tasks 1 and 2; MySQL InnoDB details is a distractor that no task accepts, so expect those two tasks to score higher than the rest and compare them with care.
 - **Technology hub pages** (MongoDB, MySQL, PostgreSQL, Valkey, Operating system) are leaf pages. The concept being tested is a hub that summarises what is happening and links to the relevant tools and actions, so a hub counts as correct for technology-scoped tasks (1, 2, 3 and 5).
 - **Account** lists only real pages. Actions such as switching theme and signing out are left out because they are not destinations.
 
