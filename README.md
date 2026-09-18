@@ -1,6 +1,6 @@
 # PMM tree test — setup
 
-Two files do everything: `index.html` (the study participants see) and `apps-script.gs` (saves each response to a Google Sheet you own). About an hour, no coding.
+Three files do everything: `index.html` (the study participants see), `logo.svg` (the PMM logo it displays) and `apps-script.gs` (saves each response to a Google Sheet you own). About an hour, no coding.
 
 ## 1. Try it locally first (2 min)
 Double-click `index.html`. It opens in your browser in **test mode**: no saving, results shown as text on the last screen. Click through once to check copy and tree labels. Edit anything in the CONFIGURATION block at the top of the file with a plain text editor.
@@ -21,7 +21,7 @@ Any time you change the script, you must Deploy → Manage deployments → edit 
 ## 3. Put it online (15 min)
 Any static host works. GitHub Pages is free:
 1. Create a new repository (private is fine for the repo, Pages will still be public), e.g. `pmm-tree-test`.
-2. Upload `index.html` (drag and drop in the GitHub web UI).
+2. Upload `index.html` and `logo.svg` together (drag and drop in the GitHub web UI). They must sit in the same folder.
 3. Settings → Pages → Source: Deploy from a branch → `main` / root → Save.
 4. After a minute the URL appears at the top of that page, like `https://<you>.github.io/pmm-tree-test/`.
 
@@ -42,10 +42,16 @@ One row per participant: role, PMM versions, the three post-test answers, and fo
 ## Reading results
 When you're done, share the sheet (or paste the CSV) into this chat and I'll compute success %, direct %, and top failure paths per task, split by audience and PMM version, against the pass marks (70% success / 50% direct).
 
-## Deliberate omissions from the tree
+## How the tree is shaped
 - **Search** is not a node. Tree tests measure browsing; search would let people bypass the structure being tested.
-- **My navigation** (starred items) is not included; it's empty for someone who has never used the product.
-- **Configuration / Users and access / Account** are included as expandable items with a few plausible children so they act as realistic distractors.
+- **My navigation** simulates a participant who has already pinned two pages: MongoDB backups and PostgreSQL query analytics. Those are accepted answers for tasks 1 and 2, so expect those two tasks to score higher than the rest and compare them with care.
+- **Technology hub pages** (MongoDB, MySQL, PostgreSQL, Valkey, Operating system) are leaf pages. The concept being tested is a hub that summarises what is happening and links to the relevant tools and actions, so a hub counts as correct for technology-scoped tasks (1, 2, 3 and 5).
+- **Account** lists only real pages. Actions such as switching theme and signing out are left out because they are not destinations.
+
+## Participant flow
+- Participants can go back and edit answers on the questions before and after the tasks. Their earlier answers are restored.
+- Tasks are one-way. Once a task is answered it cannot be revisited, because the path, back-steps and timing measure the first attempt.
+- The "Not sure where I'd go" button records the task as `skipped`.
 
 ## Changing tasks or tree later
 Edit `TREE`, `TASKS`, `PRE`, `POST` or `COPY` in `index.html`. If you change the tree or tasks after responses have started coming in, change `STUDY.id` too so old and new responses don't mix.

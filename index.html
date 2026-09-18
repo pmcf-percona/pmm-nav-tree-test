@@ -131,7 +131,7 @@ const TREE = [
     { label: "Users and access", children: [
       { label: "Users" }, { label: "Teams" }, { label: "Services accounts" }, { label: "Access roles" } ]},
     { label: "Account", children: [
-      { label: "Profile" }, { label: "Notification history" }, { label: "Change password" }, { label: "Switch to light mode" }, { label: "Sign out" } ]},
+      { label: "Profile" }, { label: "Notification history" }, { label: "Change password" } ]},
     { label: "Help" }
   ]}
 ];
@@ -140,16 +140,16 @@ const TREE = [
 //    A destination matches if the participant's chosen node path equals it,
 //    or (for a parent) if their choice is that node or anything inside it when `deep: true`.
 const TASKS = [
-  { id: "T1", text: "One of your MongoDB clusters has a backup that runs every night. Check whether last night's run completed successfully.",
+  { id: "T1", text: "One of your MongoDB clusters is copied to safe storage every night. Check whether last night's copy finished without errors.",
     correct: ["MongoDB backups", "MongoDB hub page", "Apps > MongoDB backups", "Home page"] },
-  { id: "T2", text: "Users say a PostgreSQL database got slow this morning. Find where you'd see which queries are taking the longest.",
+  { id: "T2", text: "Users say a PostgreSQL database got slow this morning. Find where you'd see which SQL statements are taking the longest to run.",
     correct: ["PostgreSQL query analytics", "PostgreSQL hub page", "Query analytics"] },
   { id: "T3", text: "You've just set up a new MySQL server. Where would you go so PMM starts monitoring it?",
     correct: ["MySQL hub page", "Inventory > Services"] },
-  { id: "T4", text: "You've just been paged. Find the quickest place to see which of your databases currently have a problem.",
+  { id: "T4", text: "You've just been paged/notified. Find the quickest place to see which of your databases currently have a problem.",
     correct: ["Home page", "Alerts > Status"] },
   { id: "T5", text: "You want to be told when replication lag on a MongoDB cluster goes above a threshold. Where would you set that up?",
-    correct: ["Alerts > Alert rules", "Alerts > Templates"] },
+    correct: ["Alerts > Alert rules", "Alerts > Templates", "MongoDB hub page"] },
   { id: "T6", text: "Percona Support asked you to send a diagnostics bundle from your PMM server. Where would you get it?",
     correct: ["Apps > Support diagnostics"] }
   // Optional muscle-memory probe — uncomment to include:
@@ -166,17 +166,17 @@ const PRE = [
 ];
 const POST = [
   { id: "ease", type: "scale", q: "Overall, how easy was it to find things in this menu?", low: "Very hard", high: "Very easy" },
-  { id: "hub_expect", type: "single", q: "If you clicked \"MySQL\" in a database monitoring tool, what would you expect to see?",
-    options: ["A list of dashboards to choose from","A summary page: health, your clusters, and links to tools","The main MySQL dashboard straight away"], other: true },
+  { id: "hub_expect", type: "single", q: "If you clicked \"MySQL hub page\" in a database monitoring tool, what would you expect to see?",
+    options: ["A list of dashboards to choose from","A summary page: health, your clusters, and links to apps, tools and actions","The main MySQL dashboard straight away"], other: true },
   { id: "hardest", type: "text", q: "Which task was hardest, and what did you expect to click instead?", optional: true }
 ];
 
 const COPY = {
   welcomeTitle: "Help us make PMM easier to navigate",
-  welcome: "This takes about 5 minutes. You'll see a text-only version of PMM's main menu, the sidebar you use to move around between pages. We'll give you some simple tasks and ask you to click through that menu and the select the page entry where you'd expect to find what you need. There are no wrong answers.",
-  welcome2: "Your answers are completely anonymous.",
+  welcome: "This takes about 5 minutes. You'll see a text-only version of PMM's (Percona Monitoring and Management) main menu, the sidebar you use to move around between pages. We'll give you a few tasks and ask you to click through and select a page. There are no wrong answers.",
+  welcome2: "Your answers are anonymous unless you choose to get in touch at the end.",
   start: "Start",
-  taskIntro: "Each task describes something you need to do in PMM. Click through the menu the way you would in the real PMM sidebar. When you see the item you believe opens the page that holds what you need, select it and click \"I'd find it here\". Go with your instinct.",
+  taskIntro: "Each task describes something you need to do. Click through the menu the way you would in the real PMM sidebar. When you see the item you believe opens the page you need, select it and click \"I'd find it here\". Go with your instinct.",
   taskPrompt: "Where in the menu would you click to reach this?",
   thanksTitle: "Thanks. That helps a lot.",
   thanks: "Your answers feed directly into how PMM's navigation will work in the next major release.",
@@ -192,6 +192,8 @@ const app = document.getElementById("app");
 const bar = document.getElementById("bar");
 const src = new URLSearchParams(location.search).get("src") || "direct";
 const doneKey = "tt_done_" + STUDY.id;
+// Open the page with ?reset to forget a previous completion in this browser (handy while testing).
+if (new URLSearchParams(location.search).has("reset")){ localStorage.removeItem(doneKey); history.replaceState(null, "", location.pathname); }
 
 // Build lookup: node -> path id, parent, children
 const byPath = new Map();
@@ -308,7 +310,7 @@ function renderQuestion(q, store){
 }
 
 function renderTaskIntro(){
-  app.appendChild(el(`<div><h2>How it works</h2><p>${esc(COPY.taskIntro)}</p>
+  app.appendChild(el(`<div><h2>How the test works</h2><p>${esc(COPY.taskIntro)}</p>
     <p class="muted small">${TASKS.length} tasks to complete.</p>
     <div class="actions" id="actions"><span class="spacer"></span><button class="primary" id="go">Begin test</button></div></div>`));
   if (canGoBack()) document.getElementById("actions").prepend(backButton());
