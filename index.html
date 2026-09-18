@@ -7,14 +7,15 @@
 <meta name="robots" content="noindex">
 <style>
   :root{
-    --bg:#ffffff; --fg:#1d1f22; --muted:#6b7078; --line:#e3e5e8; --hover:#f3f4f6;
-    --accent:#2457d6; --accent-fg:#ffffff; --ok:#1f7a45;
+    --bg:#ffffff; --fg:#1d1f22; --muted:#8c9199; --line:#e3e5e8; --hover:#f3f4f6;
+    --accent:#653DF4; --accent-fg:#ffffff; --ok:#1f7a45;
   }
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);color:var(--fg);
     font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-  .wrap{max-width:620px;margin:0 auto;padding:32px 20px 80px}
-  .progress{height:3px;background:var(--line);border-radius:2px;margin-bottom:28px;overflow:hidden}
+  .wrap{max-width:620px;margin:0 auto;padding:16px 20px 80px}
+  .logo{display:block;height:120px;width:auto;margin-bottom:24px}
+  .progress{height:4px;background:var(--line);border-radius:2px;margin-bottom:28px;overflow:hidden}
   .progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
   h1{font-size:24px;line-height:1.25;margin:0 0 12px;font-weight:650}
   h2{font-size:19px;line-height:1.3;margin:0 0 8px;font-weight:600}
@@ -38,25 +39,30 @@
   .scale button.sel{background:var(--accent);color:#fff;border-color:var(--accent)}
   .scale-labels{display:flex;justify-content:space-between}
   /* task */
-  .task{border-left:3px solid var(--accent);padding:6px 0 6px 14px;margin:0 0 18px}
+  .task{margin:0 0 18px}
   .task .kicker{font-size:13px;color:var(--muted);margin-bottom:4px}
   .task p{margin:0;font-size:17px;line-height:1.45}
-  .crumbs{font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px;align-items:center;min-height:22px;margin-bottom:8px}
+  .task p.prompt{margin-top:8px;font-size:14px;color:var(--muted)}
+  .crumbs{font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px;align-items:center;min-height:22px;margin-bottom:14px}
   .crumbs a{color:var(--muted);text-decoration:none;border-bottom:1px dotted #b8bcc2;cursor:pointer}
   .crumbs a:hover{color:var(--fg)}
   .crumbs .cur{color:var(--fg);font-weight:600}
   .tree{border:1px solid var(--line);border-radius:10px;overflow:hidden}
   .grp{padding:14px 14px 4px;font-size:12.5px;letter-spacing:.02em;color:var(--muted);font-weight:600;border-top:1px solid var(--line)}
   .grp:first-child{border-top:0}
-  .node{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer;user-select:none}
+  .node{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;user-select:none}
   .grp + .node{border-top:0}
   .node:hover{background:var(--hover)}
   .node.sel{background:#eef2fc}
-  .node .chev{color:var(--muted);font-size:14px}
-  .node .leaf{width:10px;height:10px;border-radius:50%;border:2px solid #b8bcc2}
+  .node .chev,.back .chev{width:18px;height:18px;flex:none;color:#7c828c}
+  .node:hover .chev{color:var(--fg)}
+  .node .leaf{width:18px;height:18px;flex:none;border-radius:4px;border:2px solid #9ca1a9;background:#fff;display:inline-flex;align-items:center;justify-content:center;color:#fff}
+  .node .leaf svg{width:12px;height:12px;display:none}
   .node.sel .leaf{border-color:var(--accent);background:var(--accent)}
-  .back{padding:10px 14px;border-top:1px solid var(--line);color:var(--muted);font-size:14px;cursor:pointer;background:#fafbfc}
+  .node.sel .leaf svg{display:block}
+  .back{display:flex;align-items:center;gap:6px;padding:10px 14px;border-top:1px solid var(--line);color:var(--muted);font-size:14px;cursor:pointer;background:#fafbfc}
   .back:hover{color:var(--fg)}
+  .back:hover .chev{color:var(--fg)}
   .hint{font-size:14px;color:var(--muted);margin:10px 0 0}
   .done{text-align:center;padding:40px 0}
   .done .mark{width:52px;height:52px;border-radius:50%;background:#e6f4ec;color:var(--ok);display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:16px}
@@ -67,6 +73,7 @@
 </head>
 <body>
 <div class="wrap">
+  <img class="logo" src="logo.svg" alt="Percona Monitoring and Management">
   <div class="progress"><i id="bar"></i></div>
   <div id="app"></div>
 </div>
@@ -91,78 +98,58 @@ const STUDY = {
 //    Anything with `children` can be opened; anything without is a leaf.
 //    Every node gets an id automatically from its label path, e.g. "MySQL > Add service".
 const TREE = [
-  { label: "Home" },
+  { label: "Home page" },
+  { group: "My navigation", children: [
+    { label: "MongoDB backups" },
+    { label: "PostgreSQL query analytics" }
+  ]},
   { group: "Technologies", children: [
-    { label: "MongoDB", children: techHub("MongoDB", ["MongoDB backups", "Legacy backups (deprecated)"], ["MongoDB cluster summary","MongoDB ReplSet summary","MongoDB oplog details"]) },
-    { label: "MySQL", children: techHub("MySQL", ["MySQL backups", "Schema changes"], ["MySQL instance summary","InnoDB details","Replication summary"]) },
-    { label: "PostgreSQL", children: techHub("PostgreSQL", ["PostgreSQL backups"], ["PostgreSQL instance summary","Vacuum monitoring","Replication summary"]) },
-    { label: "Valkey", children: techHub("Valkey", [], ["Valkey instance summary"]) },
-    { label: "Operating system", children: [
-      { label: "Add node" },
-      { label: "All dashboards" },
-      { label: "Top dashboards", children: [
-        { label: "Node summary" }, { label: "Nodes overview" }, { label: "Disk details" }, { label: "All operating system dashboards" } ]},
-      { label: "Nodes", children: [ { label: "All nodes" } ] }
-    ]}
+    { label: "MongoDB hub page" },
+    { label: "MySQL hub page" },
+    { label: "PostgreSQL hub page" },
+    { label: "Valkey hub page" },
+    { label: "Operating system" }
   ]},
   { group: "Analysis & alerting", children: [
-    { label: "Advisors", children: [
-      { label: "Advisor insights" }, { label: "Configuration advisors" }, { label: "Security advisors" }, { label: "Performance advisors" } ]},
+    { label: "Advisors" },
     { label: "Alerts", children: [
-      { label: "Fired alerts" }, { label: "Alert rules" }, { label: "Alert rule templates" }, { label: "Contact points" }, { label: "Notification policies" }, { label: "Silences" } ]},
+      { label: "Status" }, { label: "Alert rules" }, { label: "Templates" }, { label: "Contact points" }, { label: "Notification policies" }, { label: "Silences" }, { label: "Alert groups" }, { label: "Alert settings" } ]},
     { label: "Explore data" },
     { label: "Query analytics" }
   ]},
   { group: "Browse", children: [
+    { label: "All dashboards" },
     { label: "Apps", children: [
-      { label: "MySQL backups" }, { label: "MongoDB backups" }, { label: "PostgreSQL backups" }, { label: "Schema changes" }, { label: "Support diagnostics" }, { label: "Legacy backups (deprecated)" }, { label: "Get more apps" } ]},
-    { label: "Dashboards", children: [
-      { label: "All dashboards" }, { label: "Starred" }, { label: "Recently viewed" } ]},
-    { label: "Inventory", children: [
-      { label: "Services", children: [ { label: "All services" }, { label: "Add service" } ] },
-      { label: "Nodes", children: [ { label: "All nodes" }, { label: "Add node" } ] },
-      { label: "Agents" } ]}
+      { label: "Data archiving" }, { label: "MongoDB backups" }, { label: "MySQL backups" }, { label: "PostgreSQL backups" }, { label: "ProxySQL manager" }, { label: "Replication checksums" }, { label: "Schema changes" }, { label: "Support diagnostics" }, { label: "Valkey backups" }, { label: "Get more apps" } ]},
+    { label: "Inventory", children: [ { label: "Services" }, { label: "Nodes" } ]}
   ]},
   { group: "Administration", children: [
     { label: "PMM HA" },
     { label: "Configuration", children: [
-      { label: "Settings" }, { label: "Advanced settings" }, { label: "Metrics resolution" }, { label: "Percona Platform" }, { label: "SSH key" } ]},
+      { label: "Settings" }, { label: "Updates" },
+      { label: "Org. management", children: [ { label: "Organizations" }, { label: "Stats and licenses" }, { label: "Default preferences" } ] } ]},
     { label: "Users and access", children: [
-      { label: "Users" }, { label: "Teams" }, { label: "Service accounts" } ]},
+      { label: "Users" }, { label: "Teams" }, { label: "Services accounts" }, { label: "Access roles" } ]},
     { label: "Account", children: [
-      { label: "Profile" }, { label: "Notification history" } ]},
+      { label: "Profile" }, { label: "Notification history" }, { label: "Change password" }, { label: "Switch to light mode" }, { label: "Sign out" } ]},
     { label: "Help" }
   ]}
 ];
-
-// Shape of a technology hub. Edit once, applies to all technologies.
-function techHub(tech, apps, topDashboards){
-  const appNodes = apps.map(a => ({ label: a }));
-  appNodes.push({ label: "Get more apps" });
-  return [
-    { label: "Add service" },
-    { label: "All dashboards" },
-    { label: "Query analytics" },
-    { label: "Apps for " + tech, children: appNodes },
-    { label: "Top dashboards", children: topDashboards.map(d => ({ label: d })).concat([{ label: "All " + tech + " dashboards" }]) },
-    { label: "Services", children: [ { label: "All services" } ] }
-  ];
-}
 
 // 4. Tasks. `correct` lists accepted destinations, written as label paths with " > ".
 //    A destination matches if the participant's chosen node path equals it,
 //    or (for a parent) if their choice is that node or anything inside it when `deep: true`.
 const TASKS = [
   { id: "T1", text: "One of your MongoDB clusters has a backup that runs every night. Check whether last night's run completed successfully.",
-    correct: ["MongoDB > Apps for MongoDB > MongoDB backups", "Apps > MongoDB backups", "Home"] },
+    correct: ["MongoDB backups", "MongoDB hub page", "Apps > MongoDB backups", "Home page"] },
   { id: "T2", text: "Users say a PostgreSQL database got slow this morning. Find where you'd see which queries are taking the longest.",
-    correct: ["PostgreSQL > Query analytics", "Query analytics"] },
+    correct: ["PostgreSQL query analytics", "PostgreSQL hub page", "Query analytics"] },
   { id: "T3", text: "You've just set up a new MySQL server. Where would you go so PMM starts monitoring it?",
-    correct: ["MySQL > Add service", "Inventory > Services > Add service"] },
+    correct: ["MySQL hub page", "Inventory > Services"] },
   { id: "T4", text: "You've just been paged. Find the quickest place to see which of your databases currently have a problem.",
-    correct: ["Home", "Alerts > Fired alerts"] },
+    correct: ["Home page", "Alerts > Status"] },
   { id: "T5", text: "You want to be told when replication lag on a MongoDB cluster goes above a threshold. Where would you set that up?",
-    correct: ["Alerts > Alert rules", "Alerts > Alert rule templates"] },
+    correct: ["Alerts > Alert rules", "Alerts > Templates"] },
   { id: "T6", text: "Percona Support asked you to send a diagnostics bundle from your PMM server. Where would you get it?",
     correct: ["Apps > Support diagnostics"] }
   // Optional muscle-memory probe — uncomment to include:
@@ -173,7 +160,7 @@ const TASKS = [
 // 5. Questions before and after. Edit copy freely.
 const PRE = [
   { id: "role", type: "single", q: "Which best describes your role?",
-    options: ["DBA / database engineer","SRE / DevOps / platform engineer","Software developer","Percona employee"], other: true },
+    options: ["DBA / database engineer","SRE / DevOps / platform engineer","Software developer"], other: true },
   { id: "versions", type: "multi", q: "Which PMM versions have you used?",
     options: ["PMM 2","PMM 3"], optOut: "I haven't used PMM" }
 ];
@@ -186,10 +173,11 @@ const POST = [
 
 const COPY = {
   welcomeTitle: "Help us make PMM easier to navigate",
-  welcome: "This takes about 5 minutes. You'll see a text-only version of PMM's menu and be asked where you'd go to do a few common tasks. There's no design to look at, just labels, and there are no wrong answers. If you're not sure, pick where you'd try first.",
-  welcome2: "Your answers are anonymous.",
+  welcome: "This takes about 5 minutes. You'll see a text-only version of PMM's main menu, the sidebar you use to move around between pages. We'll give you some simple tasks and ask you to click through that menu and the select the page entry where you'd expect to find what you need. There are no wrong answers.",
+  welcome2: "Your answers are completely anonymous.",
   start: "Start",
-  taskIntro: "For each task, open the menu items until you reach the place you'd expect to find it, then choose \"I'd find it here\". You can go back at any point. If you can't find it, skip.",
+  taskIntro: "Each task describes something you need to do in PMM. Click through the menu the way you would in the real PMM sidebar. When you see the item you believe opens the page that holds what you need, select it and click \"I'd find it here\". Go with your instinct.",
+  taskPrompt: "Where in the menu would you click to reach this?",
   thanksTitle: "Thanks. That helps a lot.",
   thanks: "Your answers feed directly into how PMM's navigation will work in the next major release.",
   thanks2: "Open to a 20-minute follow-up call about how you use PMM? Reply where you found this link or email pedro.fernandes@percona.com.",
@@ -229,13 +217,23 @@ const steps = [];
 steps.push(renderWelcome);
 PRE.forEach(q => steps.push(() => renderQuestion(q, state.pre)));
 steps.push(renderTaskIntro);
-state.order.forEach((ti, n) => steps.push(() => renderTask(TASKS[ti], n)));
+const taskSteps = new Set();
+state.order.forEach((ti, n) => { taskSteps.add(steps.length); steps.push(() => renderTask(TASKS[ti], n)); });
 POST.forEach(q => steps.push(() => renderQuestion(q, state.post)));
 steps.push(renderSubmit);
 let step = 0;
 
 function go(){ bar.style.width = Math.round(step/(steps.length-1)*100) + "%"; app.innerHTML=""; steps[step](); window.scrollTo(0,0); }
 function next(){ step++; go(); }
+// Going back is allowed everywhere except into a finished task (its timing and path are already recorded).
+function canGoBack(){ return step > 0 && !taskSteps.has(step-1); }
+function back(){ if (canGoBack()){ step--; go(); } }
+function backButton(){ const b = el(`<button type="button" id="back">‹ Back</button>`); b.onclick = back; return b; }
+const ICON = {
+  right: '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>',
+  left:  '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>'
+};
 function el(html){ const t=document.createElement("template"); t.innerHTML=html.trim(); return t.content.firstElementChild; }
 function esc(s){ return String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
@@ -254,8 +252,9 @@ function renderWelcome(){
 
 function renderQuestion(q, store){
   const box = el(`<div><h2>${esc(q.q)}</h2></div>`);
-  let value = q.type === "multi" ? [] : null;
-  let otherText = "";
+  const saved = store[q.id];
+  let value = saved !== undefined ? (Array.isArray(saved) ? saved.slice() : saved) : (q.type === "multi" ? [] : null);
+  let otherText = store[q.id + "_other"] || "";
   const btn = el(`<button class="primary" disabled>Continue</button>`);
   const check = () => { btn.disabled = !(q.optional || (Array.isArray(value) ? value.length : value !== null) ); };
 
@@ -269,6 +268,8 @@ function renderQuestion(q, store){
       const isOptOut = q.optOut && o === q.optOut;
       const row = el(`<label class="choice"><input type="${q.type==="multi"?"checkbox":"radio"}" name="${q.id}"><span>${esc(o)}</span></label>`);
       const input = row.querySelector("input");
+      input.checked = q.type === "multi" ? value.includes(o) : value === o;
+      row.classList.toggle("sel", input.checked);
       input.onchange = () => {
         if (q.type === "multi"){
           if (isOptOut && input.checked){ value = [o]; list.querySelectorAll("input").forEach(i=>{ if(i!==input) i.checked=false; }); }
@@ -282,30 +283,35 @@ function renderQuestion(q, store){
       list.appendChild(row);
     });
     const otherBox = el(`<div style="display:none;margin-top:6px"><textarea placeholder="Tell us more (optional)" style="min-height:60px"></textarea></div>`);
+    otherBox.querySelector("textarea").value = otherText;
     otherBox.querySelector("textarea").oninput = e => otherText = e.target.value;
+    otherBox.style.display = (q.type === "multi" ? value.includes("Other") : value === "Other") ? "block" : "none";
     box.appendChild(list); box.appendChild(otherBox);
   }
   if (q.type === "scale"){
     const s = el(`<div class="scale"></div>`);
-    for (let i=1;i<=5;i++){ const b = el(`<button type="button">${i}</button>`); b.onclick=()=>{ value=i; s.querySelectorAll("button").forEach(x=>x.classList.toggle("sel", x===b)); check(); }; s.appendChild(b); }
+    for (let i=1;i<=5;i++){ const b = el(`<button type="button">${i}</button>`); if (value === i) b.classList.add("sel"); b.onclick=()=>{ value=i; s.querySelectorAll("button").forEach(x=>x.classList.toggle("sel", x===b)); check(); }; s.appendChild(b); }
     box.appendChild(s);
     box.appendChild(el(`<div class="scale-labels small muted"><span>${esc(q.low)}</span><span>${esc(q.high)}</span></div>`));
   }
   if (q.type === "text"){
     const t = el(`<textarea placeholder="${q.optional ? "Optional, one line is plenty" : ""}"></textarea>`);
+    if (value) t.value = value;
     t.oninput = e => { value = e.target.value.trim() || null; check(); };
     box.appendChild(t);
   }
   check();
-  btn.onclick = () => { store[q.id] = value; if (otherText) store[q.id + "_other"] = otherText; next(); };
+  btn.onclick = () => { store[q.id] = value; if (otherText) store[q.id + "_other"] = otherText; else delete store[q.id + "_other"]; next(); };
   const actions = el(`<div class="actions"></div>`);
+  if (canGoBack()){ actions.appendChild(backButton()); actions.appendChild(el(`<span class="spacer"></span>`)); }
   actions.appendChild(btn); box.appendChild(actions); app.appendChild(box);
 }
 
 function renderTaskIntro(){
   app.appendChild(el(`<div><h2>How it works</h2><p>${esc(COPY.taskIntro)}</p>
-    <p class="muted small">${TASKS.length} tasks.</p>
-    <div class="actions"><button class="primary" id="go">Begin</button></div></div>`));
+    <p class="muted small">${TASKS.length} tasks to complete.</p>
+    <div class="actions" id="actions"><span class="spacer"></span><button class="primary" id="go">Begin test</button></div></div>`));
+  if (canGoBack()) document.getElementById("actions").prepend(backButton());
   document.getElementById("go").onclick = next;
 }
 
@@ -315,12 +321,12 @@ function renderTask(task, n){
   let selected = null;  // leaf node awaiting confirm
 
   const box = el(`<div>
-    <div class="task"><div class="kicker">Task ${n+1} of ${TASKS.length}</div><p>${esc(task.text)}</p></div>
+    <div class="task"><div class="kicker">Task ${n+1} of ${TASKS.length}</div><p>${esc(task.text)}</p><p class="prompt">${esc(COPY.taskPrompt)}</p></div>
     <div class="crumbs" id="crumbs"></div>
     <div class="tree" id="tree"></div>
-    <div class="actions">
-      <button id="skip">I can't find it</button>
+    <div class="actions" id="actions">
       <span class="spacer"></span>
+      <button id="skip">Not sure where I'd go</button>
       <button class="primary" id="here" disabled>I'd find it here</button>
     </div>
   </div>`);
@@ -331,7 +337,9 @@ function renderTask(task, n){
     treeEl.innerHTML = ""; crumbs.innerHTML = "";
     // breadcrumbs
     const chain = []; let c = current; while (c){ chain.unshift(c); c = c.parent; }
-    const root = el(`<a>Menu</a>`); root.onclick = () => jump(null); crumbs.appendChild(root);
+    const root = chain.length ? el(`<a>Main menu</a>`) : el(`<span class="cur">Main menu</span>`);
+    if (chain.length) root.onclick = () => jump(null);
+    crumbs.appendChild(root);
     chain.forEach((nd, i) => {
       crumbs.appendChild(el(`<span>›</span>`));
       const a = i === chain.length-1 ? el(`<span class="cur">${esc(nd.label)}</span>`) : el(`<a>${esc(nd.label)}</a>`);
@@ -345,7 +353,7 @@ function renderTask(task, n){
       else drawNode(it);
     });
     if (current){
-      const b = el(`<div class="back">‹ Back to ${esc(current.parent ? current.parent.label : "menu")}</div>`);
+      const b = el(`<div class="back">${ICON.left}<span>Back to ${esc(current.parent ? current.parent.label : "main menu")}</span></div>`);
       b.onclick = () => { rec.backs++; rec.path.push("<back>"); current = current.parent; selected = null; here.disabled = true; draw(); };
       treeEl.appendChild(b);
     }
@@ -353,7 +361,7 @@ function renderTask(task, n){
     here.disabled = !(selected || current);
   }
   function drawNode(nd){
-    const row = el(`<div class="node"><span>${esc(nd.label)}</span>${nd.children ? '<span class="chev">›</span>' : '<span class="leaf"></span>'}</div>`);
+    const row = el(`<div class="node"><span>${esc(nd.label)}</span>${nd.children ? ICON.right : '<span class="leaf">' + ICON.check + '</span>'}</div>`);
     if (selected === nd) row.classList.add("sel");
     row.onclick = () => {
       if (nd.children){ rec.path.push(nd.path); current = nd; selected = null; draw(); }
