@@ -16,7 +16,7 @@ Double-click `index.html`. It opens in your browser in **test mode**: no saving,
 5. Copy the **Web app URL** (ends in `/exec`).
 6. Open `index.html`, find `const ENDPOINT = "";` near the top and paste the URL between the quotes. Save.
 
-Any time you change the script, you must Deploy → Manage deployments → edit → New version, otherwise the old one keeps running.
+Any time you change the script, you must Deploy → Manage deployments → pencil icon → Version: New version → Deploy, otherwise the old one keeps running. Opening the `/exec` URL in a browser should show "PMM tree test endpoint is running."
 
 ## 3. Put it online (15 min)
 Any static host works. GitHub Pages is free:
@@ -37,7 +37,7 @@ Same page, different tag. The tag lands in the `src` column so you can split res
 Open your link, complete the study once. A row should appear in the sheet within a few seconds. Delete that row before you post the link. To retake it yourself, open the link in a private window (the page remembers completion per browser).
 
 ## What's recorded
-One row per participant: role, PMM versions, the three post-test answers, and for each task: outcome (`direct`, `indirect`, `direct-fail`, `indirect-fail`, `skipped`), chosen destination, number of back-steps, seconds, the order it was shown in, and the full click path.
+One row per participant in the `Responses` tab: role, PMM versions, the three post-test answers, and for each task (columns `T1_…` to `T7_…`, always in that order): outcome (`direct`, `indirect`, `direct-fail`, `indirect-fail`, `skipped`), chosen destination, number of back-steps, seconds, the order it was shown in, and the full click path. The last column holds the raw submission as a safety copy. If a submission cannot be parsed it lands in an `Errors` tab instead of being lost.
 
 ## Reading results
 When you're done, share the sheet (or paste the CSV) into this chat and I'll compute success %, direct %, and top failure paths per task, split by audience and PMM version, against the pass marks (70% success / 50% direct).
